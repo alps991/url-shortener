@@ -6,6 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const dns = require('dns');
+const { URL } = require('url');
 
 const app = express();
 
@@ -37,8 +38,8 @@ const Shorturl = mongoose.model('Shorturl', {
 //API endpoints
 
 app.post('/api/shorturl/new', (req, res) => {
-  var url = req.body.url.replace(/(^\w+:|^)\/\//, '');
-  dns.lookup(url, (err, addresses) => {
+  var url_host = new URL(req.body.url).hostname;
+  dns.lookup(url_host, (err, addresses) => {
     if (err) {
       return res.json({ "error": "invalid URL" });
     }
