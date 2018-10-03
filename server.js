@@ -37,7 +37,7 @@ const Shorturl = mongoose.model('Shorturl', {
 
 //API endpoints
 
-app.post('/api/shorturl/new', (req, res) => {
+app.post('/new', (req, res) => {
   var url_host = new URL(req.body.url).hostname;
   dns.lookup(url_host, (err, addresses) => {
     if (err) {
@@ -71,7 +71,7 @@ app.post('/api/shorturl/new', (req, res) => {
   });
 });
 
-app.get("/api/shorturl/:short_url", function (req, res) {
+app.get("/:short_url", function (req, res) {
   Shorturl.findOne({ short_url: req.params.short_url }, (err, element) => {
     if (err) {
       return console.log(err.message);
