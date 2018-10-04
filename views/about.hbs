@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>URL Shortener</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="/public/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div class="container">
+        {{>header}}
+        <h2 class="about-header">About</h2>
+        <p class="about">
+            This microservice API was created with Node and Express. When a new URL is POSTed to
+            <code>
+                &lt;http://trim-url.herokuapp.com/new&gt;
+            </code> it is added to a MongoDB database where it is assigned an id, incremented over the id of the previous entry.
+            The API endpoint at
+            <code>
+                &lt;http://trim-url.herokuapp.com/:id&gt;
+            </code> then extracts the specified id, finds it in the database, and redirects the user.
+        </p>
+        <p id="created-by">Created by
+            <a href="http://alper-donmez.com">Alper Donmez</a>
+        </p>
+    </div>
+</body>
+
+
+</html>

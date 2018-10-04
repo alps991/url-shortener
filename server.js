@@ -24,7 +24,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(process.cwd() + '/views/index.html');
+  res.render('index.hbs');
+});
+
+app.get('/about', (req, res) => {
+  res.render('about.hbs');
 });
 
 const addhttp = (url) => {
