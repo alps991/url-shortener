@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>URL Shortener</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="/public/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div class="container">
+        {{>header}}
+        <h2>Original URL</h2>
+        {{long_url}}
+        <h2>Your new URL</h2>
+        <a href="http://trim-url.herokuapp.com/{{short_url}}" target="_blank">
+            trim-url.herokuapp.com/{{short_url}}
+        </a>
+
+    </div>
+</body>
+
+
+</html>

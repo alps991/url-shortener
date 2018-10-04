@@ -7,11 +7,15 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const dns = require('dns');
 const { URL } = require('url');
+const hbs = require('hbs');
 
 const app = express();
 
 // Basic Configuration 
 const port = process.env.PORT || 3000;
+
+app.set('view engine', 'hbs');
+hbs.registerPartials(__dirname + "/views/partials/");
 
 mongoose.connect(process.env.MONGOLAB_URI);
 mongoose.Promise = global.Promise;
@@ -22,6 +26,13 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
+
+const addhttp = (url) => {
+  if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    url = "http://" + url;
+  }
+  return url;
+}
 
 const Shorturl = mongoose.model('Shorturl', {
   long_url: {
@@ -37,36 +48,48 @@ const Shorturl = mongoose.model('Shorturl', {
 
 //API endpoints
 
-app.post('/new', (req, res) => {
-  var url_host = new URL(req.body.url).hostname;
+app.post('/newURL', (req, res) => {
+  var long_url = addhttp(req.body.url);
+  var url_host = new URL(long_url).hostname;
+  var short_url;
+
   dns.lookup(url_host, (err, addresses) => {
     if (err) {
-      return res.json({ "error": "invalid URL" });
+      return res.render("errorPage.hbs", { invalid_url: req.body.url });
     }
-    Shorturl.find({ long_url: req.body.url }, (err, element) => {
+
+    Shorturl.find({ long_url }, (err, element) => {
       if (err) {
-        return console.log(err.message);
+        return console.log('error connecting to database');
       }
+
       if (element.length == 0) {
         Shorturl.count({}, (err, count) => {
+          if (err) {
+            return console.log('error counting');
+          }
           var shorturl = new Shorturl({
-            long_url: req.body.url,
+            long_url,
             short_url: count + 1
           });
           shorturl.save().then(() => {
             console.log('url was successfully saved');
-          })
-          res.json({
-            long_url: shorturl.long_url,
-            short_url: shorturl.short_url
+            res.render('successPage.hbs', {
+              long_url,
+              short_url: shorturl.short_url
+            });
           });
         });
       } else {
-        res.json({
-          long_url: element[0].long_url,
-          short_url: element[0].short_url
+        long_url = element[0].long_url;
+        short_url = element[0].short_url;
+
+        res.render('successPage.hbs', {
+          long_url,
+          short_url
         });
       }
+
     });
   });
 });
@@ -77,7 +100,6 @@ app.get("/:short_url", function (req, res) {
       return console.log(err.message);
     }
     if (element) {
-      console.log(element);
       res.writeHead(301,
         { Location: element.long_url }
       );
