@@ -3,11 +3,14 @@
 require('dotenv').config();
 
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const dns = require('dns');
 const { URL } = require('url');
 const hbs = require('hbs');
+const path = require('path');
+
+const { Shorturl } = require('./models/shorturl');
+const { mongoose } = require('./db/mongoose');
 
 const app = express();
 
@@ -15,10 +18,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.set('view engine', 'hbs');
-hbs.registerPartials(__dirname + "/views/partials/");
-
-mongoose.connect(process.env.MONGOLAB_URI);
-mongoose.Promise = global.Promise;
+hbs.registerPartials(path.join(__dirname, "../views/partials/"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -37,18 +37,6 @@ const addhttp = (url) => {
   }
   return url;
 }
-
-const Shorturl = mongoose.model('Shorturl', {
-  long_url: {
-    type: String,
-    required: true,
-    minlength: 1
-  },
-  short_url: {
-    type: Number,
-    required: true
-  }
-});
 
 //API endpoints
 
